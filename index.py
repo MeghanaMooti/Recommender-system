@@ -1,0 +1,61 @@
+import numpy as np
+import pandas as pd
+print("Enter Your Country Name\n")
+x1 = input()
+x1 = x1.lower()
+x1 = x1.title()
+print("The Selected Country Is : " + x1 + "\n\n")
+print("Enter Your Month\n")
+x2 = input()
+x2 = x2.lower()
+x2 = x2.title()
+print("The Selected Month Is : " + x2 + "\n\n")
+data = pd.read_csv("OnlineRetail-_4_.csv")
+data.Country.unique()
+data[data["Quantity"] < 0] = np.NaN
+data["Country"] = data["Country"].replace("Unspecified", np.NaN)
+data["InvoiceDate"] = pd.to_datetime(data["InvoiceDate"])
+data["InvoiceDate"] = data["InvoiceDate"].dt.month
+data.dropna()
+df = pd.DataFrame(data.groupby(["StockCode"])["Quantity"].sum())
+df.reset_index()
+df.loc[df["Quantity"] == df["Quantity"].max()]
+df1 = pd.DataFrame(data.groupby(["Country", "StockCode"])["Quantity"].sum())
+df1.reset_index()
+df2 = pd.DataFrame(data.groupby(["Country", "InvoiceDate", "StockCode"])["Quantity"].sum())
+df2 = df2.reset_index()
+pd.DataFrame(df2.groupby(["Country", "InvoiceDate", "StockCode"])["Quantity"].max())
+df2.reset_index()
+df3 = df2.sort_values(by="Quantity")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(1.0, "January")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(2.0, "Febuary")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(3.0, "March")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(4.0, "April")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(5.0, "May")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(6.0, "June")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(7.0, "July")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(8.0, "August")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(9.0, "September")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(10.0, "October")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(11.0, "November")
+df3["InvoiceDate"] = df3["InvoiceDate"].replace(12.0, "December")
+df3.drop(df3[df3["Country"] != x1].index, inplace=True)
+df3
+y1 = df3["Quantity"].max()
+z1 = df3[df3.Quantity == y1]
+print("The Best Reccomendation Based On Country Is :\n")
+print(z1)
+print("\n\n")
+df3.drop(df3[df3["InvoiceDate"] != x2].index, inplace=True)
+df3
+y2 = df3["Quantity"].max()
+z2 = df3[df3.Quantity == y2]
+print("The Best Reccomendation Based On Month In Your Country Is : \n")
+print(z2)
+print("\n\n")
+y3 = df2["Quantity"].max()
+z3 = df2[df2.Quantity == y3]
+print("The Best Reccomendation Based On Globally Is : \n")
+print(z3)
+print("\n\n")
+
